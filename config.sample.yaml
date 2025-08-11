@@ -1,0 +1,29 @@
+# Google Photo Uploader Configuration Sample
+# Copy this file to config.yaml and update with your values
+
+camera:
+  use: true
+  photo_dir: "photos"
+  settings:
+    width: 1920
+    height: 1080
+    fourcc: "MJPG"
+    fps: 30
+    focus: null
+  scheduler:
+    day_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    at_time: ["06:00:00", "12:00:00", "18:00:00"]
+
+google_photos:
+  use: true
+  client_secrets_path: "gcp/client_secrets.json"
+  token_path: "gcp/photo_token.json"
+  album_title: "Camera Photos"
+
+notifications:
+  aws_sns:
+    use: true
+    region: "ap-northeast-1"
+    topic_arn: "arn:aws:sns:ap-northeast-1:YOUR_ACCOUNT_ID:photo-uploader-alerts"
+    subject: "[Alert] Google Photos Authentication Error"
+    message_body: "Google Photos authentication has expired. Please renew the token."
