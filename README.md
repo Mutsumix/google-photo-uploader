@@ -36,7 +36,7 @@ vi config.yaml
 
 1. [Google Cloud Console](https://console.cloud.google.com/)でプロジェクトを作成
 2. Photos Library API を有効化
-3. OAuth 2.0 認証情報を作成し、`gcp/client_secrets.json`として保存
+3. OAuth 2.0 認証情報を作成し、`client_secrets.json`として保存
 4. 初回認証セットアップを実行:
 
 ```bash
@@ -76,8 +76,8 @@ camera:
 
 google_photos:
   use: true # Google Photos機能の有効/無効
-  client_secrets_path: "gcp/client_secrets.json" # OAuth認証情報
-  token_path: "gcp/photo_token.json" # アクセストークン
+  client_secrets_path: "client_secrets.json" # OAuth認証情報
+  token_path: "photo_token.json" # アクセストークン
   album_title: "aeroponics" # アップロード先アルバム名
 
 notifications:
@@ -127,9 +127,8 @@ google-photo-uploader/
 ├── config.yaml            # 設定ファイル（要作成）
 ├── config.sample.yaml     # 設定サンプル
 ├── requirements.txt       # Python依存関係
-├── gcp/                   # Google認証ファイル（要作成）
-│   ├── client_secrets.json
-│   └── photo_token.json
+├── client_secrets.json    # OAuth認証情報（要作成）
+├── photo_token.json       # アクセストークン（自動生成）
 ├── photos/                # 一時画像保存（自動作成）
 ├── logs/                  # ログファイル（自動作成）
 └── README.md              # このファイル
@@ -149,7 +148,7 @@ python -c "import cv2; print(cv2.VideoCapture(0).isOpened())"
 
 ### Google Photos 認証エラー
 
-1. `gcp/photo_token.json`を削除
+1. `photo_token.json`を削除
 2. プログラムを再実行して再認証
 3. ブラウザで認証フローを完了
 

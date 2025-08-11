@@ -41,15 +41,13 @@ def main():
         config = yaml.safe_load(f)
 
     # 必要なディレクトリ作成
-    gcp_dir = os.path.dirname(config['google_photos']['client_secrets_path'])
-    os.makedirs(gcp_dir, exist_ok=True)
     os.makedirs(config['camera']['photo_dir'], exist_ok=True)
 
     # client_secrets.json確認
     client_secrets_path = config['google_photos']['client_secrets_path']
     if not os.path.exists(client_secrets_path):
         print(f"ERROR: OAuth認証ファイルが見つかりません: {client_secrets_path}")
-        print("   Google Cloud Consoleで作成したclient_secrets.jsonを配置してください。")
+        print("   Google Cloud Consoleで作成したclient_secrets.jsonをプロジェクトルートに配置してください。")
         sys.exit(1)
 
     print(f"OK: 設定ファイル読み込み完了: {args.config}")

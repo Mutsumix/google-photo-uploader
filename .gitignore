@@ -3,8 +3,8 @@ config.yaml
 CONTEXT.md
 
 # 認証ファイル・GCPクレデンシャル
-gcp/
-*.json
+client_secrets.json
+photo_token.json
 
 # 一時ファイル・データ
 photos/

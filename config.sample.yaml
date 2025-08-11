@@ -16,8 +16,8 @@ camera:
 
 google_photos:
   use: true
-  client_secrets_path: "gcp/client_secrets.json"
-  token_path: "gcp/photo_token.json"
+  client_secrets_path: "client_secrets.json"
+  token_path: "photo_token.json"
   album_title: "Camera Photos"
 
 notifications:
