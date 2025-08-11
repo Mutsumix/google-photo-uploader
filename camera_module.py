@@ -11,27 +11,27 @@ def setup_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
     if logger.handlers:
         return logger
-        
+
     logger.setLevel(logging.INFO)
-    
+
     log_dir = 'logs'
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-    
+
     file_handler = RotatingFileHandler(
         f'{log_dir}/camera.log',
         maxBytes=10*1024*1024,
         backupCount=5
     )
     console_handler = logging.StreamHandler()
-    
+
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
-    
+
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
-    
+
     return logger
 
 logger = setup_logger(__name__)
@@ -83,20 +83,23 @@ class CameraModule(object):
             cap.set(cv2.CAP_PROP_FRAME_HEIGHT, settings["height"])
         if settings and "fps" in settings and settings["fps"]:
             cap.set(cv2.CAP_PROP_FPS, settings["fps"])
-        if settings and "focus" in settings and settings["focus"]:
-            cap.set(cv2.CAP_PROP_FOCUS, settings["focus"])
-            
-        # カメラ最適化設定
+                # カメラ最適化設定
         cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
         cap.set(cv2.CAP_PROP_AUTO_WB, 1)
-        cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
+        
+        # フォーカス設定（手動フォーカスが設定されている場合はオートフォーカスを無効化）
+        if settings and "focus" in settings and settings["focus"]:
+            cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # オートフォーカス無効
+            cap.set(cv2.CAP_PROP_FOCUS, settings["focus"])
+        else:
+            cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)  # オートフォーカス有効
         cap.set(cv2.CAP_PROP_BRIGHTNESS, -10)
         cap.set(cv2.CAP_PROP_CONTRAST, 35)
         cap.set(cv2.CAP_PROP_SATURATION, 110)
-        
+
         zoom_level = 50
         cap.set(cv2.CAP_PROP_ZOOM, zoom_level)
-        
+
         logger.info(f"zoom: {cap.get(cv2.CAP_PROP_ZOOM)}")
 
         logger.info(f"fourcc: {self.decode_fourcc(cap.get(cv2.CAP_PROP_FOURCC))}, width: {cap.get(cv2.CAP_PROP_FRAME_WIDTH)}, "
@@ -137,16 +140,16 @@ def debug() -> None:
     parser = argparse.ArgumentParser(description="Camera module script")
     parser.add_argument("--config", default="config.yaml", help="config file path")
     args = parser.parse_args()
-    
+
     with open(args.config) as f:
         config = yaml.safe_load(f)
 
     camera_config = config["camera"]
     settings = camera_config["settings"]
-    
+
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M")
     save_path = f"{config['camera']['photo_dir']}/camera_{current_datetime}.jpg"
-    
+
     os.makedirs(config['camera']['photo_dir'], exist_ok=True)
 
     camera_module = CameraModule()
