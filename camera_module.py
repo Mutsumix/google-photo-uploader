@@ -74,9 +74,15 @@ class CameraModule(object):
             A boolean if success to save a camera photo.
         """
         cap = cv2.VideoCapture(self._device_id)
+
+        # 最初にMJPGフォーマットを設定（高解像度サポートのため）
         if settings and "fourcc" in settings and settings["fourcc"]:
             c1, c2, c3, c4 = list(settings["fourcc"])
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(c1, c2, c3, c4))
+        else:
+            # デフォルトでMJPGを使用（1920x1080サポートのため）
+            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+
         if settings and "width" in settings and settings["width"]:
             cap.set(cv2.CAP_PROP_FRAME_WIDTH, settings["width"])
         if settings and "height" in settings and settings["height"]:
@@ -92,7 +98,7 @@ class CameraModule(object):
             focus_value = settings["focus"]
         else:
             focus_value = 255  # デフォルトは無限遠フォーカス
-        
+
         cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # オートフォーカス無効
         cap.set(cv2.CAP_PROP_FOCUS, focus_value)
         logger.info(f"Focus set to: {focus_value}")

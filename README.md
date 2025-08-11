@@ -146,6 +146,32 @@ ls /dev/video*
 python -c "import cv2; print(cv2.VideoCapture(0).isOpened())"
 ```
 
+### 画像が低解像度（640x480）で撮影される
+
+USB UVCカメラで高解像度撮影ができない場合、ビデオフォーマットの問題が原因の可能性があります。
+
+**原因**: OpenCVはデフォルトでYUYVフォーマットを使用しますが、多くのUSBカメラでYUYVは低解像度（640x480）のみサポートしています。
+
+**解決方法**: 
+1. サポートされている解像度とフォーマットを確認:
+```bash
+v4l2-ctl -d /dev/video2 --list-formats-ext
+```
+
+2. MJPGフォーマットが1920x1080をサポートしている場合、設定で明示的にMJPGを指定:
+```yaml
+camera:
+  settings:
+    fourcc: "MJPG"  # 重要: 高解像度にはMJPGが必要
+    width: 1920
+    height: 1080
+```
+
+**技術的詳細**: 
+- YUYVフォーマット: 通常640x480まで
+- MJPGフォーマット: 高解像度（1080p, 4K）対応
+- カメラモジュールは自動的にフェイルセーフとしてMJPGを設定
+
 ### Google Photos 認証エラー
 
 1. `photo_token.json`を削除
