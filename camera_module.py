@@ -86,13 +86,16 @@ class CameraModule(object):
                 # カメラ最適化設定
         cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
         cap.set(cv2.CAP_PROP_AUTO_WB, 1)
-        
-        # フォーカス設定（手動フォーカスが設定されている場合はオートフォーカスを無効化）
-        if settings and "focus" in settings and settings["focus"]:
-            cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # オートフォーカス無効
-            cap.set(cv2.CAP_PROP_FOCUS, settings["focus"])
+
+        # フォーカス設定（このカメラはオートフォーカス非対応のため手動フォーカスを使用）
+        if settings and "focus" in settings and settings["focus"] is not None:
+            focus_value = settings["focus"]
         else:
-            cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)  # オートフォーカス有効
+            focus_value = 255  # デフォルトは無限遠フォーカス
+        
+        cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # オートフォーカス無効
+        cap.set(cv2.CAP_PROP_FOCUS, focus_value)
+        logger.info(f"Focus set to: {focus_value}")
         cap.set(cv2.CAP_PROP_BRIGHTNESS, -10)
         cap.set(cv2.CAP_PROP_CONTRAST, 35)
         cap.set(cv2.CAP_PROP_SATURATION, 110)
