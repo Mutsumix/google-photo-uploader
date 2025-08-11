@@ -116,6 +116,11 @@ class CameraModule(object):
             current_datetime = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             cv2.putText(img, current_datetime, (0, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3, cv2.LINE_AA)
 
+        # 保存先ディレクトリを作成
+        save_dir = os.path.dirname(save_path)
+        if save_dir:
+            os.makedirs(save_dir, exist_ok=True)
+
         result = cv2.imwrite(save_path, img)
         cap.release()
         cv2.destroyAllWindows()
