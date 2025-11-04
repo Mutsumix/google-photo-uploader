@@ -19,7 +19,7 @@ google_photos:
   use: true
   client_secrets_path: "client_secrets.json"
   token_path: "photo_token.json"
-  album_title: "Camera Photos"
+  album_title: "raspi-camera"
 
 notifications:
   aws_sns:

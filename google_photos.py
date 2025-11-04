@@ -1,9 +1,6 @@
 """
 Google Photos API Client Module
 
-This module contains code derived from the iot-kit project by t24kc:
-https://github.com/t24kc/iot-kit/blob/main/lib/photo_library.py
-
 Key improvements:
 - Enhanced error handling for authentication errors
 - Logging system with rotation
