@@ -75,12 +75,11 @@ class CameraModule(object):
         """
         cap = cv2.VideoCapture(self._device_id)
 
-        # 最初にMJPGフォーマットを設定（高解像度サポートのため）
+        # 基本設定（全カメラ共通）
         if settings and "fourcc" in settings and settings["fourcc"]:
             c1, c2, c3, c4 = list(settings["fourcc"])
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(c1, c2, c3, c4))
         else:
-            # デフォルトでMJPGを使用（1920x1080サポートのため）
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 
         if settings and "width" in settings and settings["width"]:
@@ -89,30 +88,32 @@ class CameraModule(object):
             cap.set(cv2.CAP_PROP_FRAME_HEIGHT, settings["height"])
         if settings and "fps" in settings and settings["fps"]:
             cap.set(cv2.CAP_PROP_FPS, settings["fps"])
-                # カメラ最適化設定
-        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
-        cap.set(cv2.CAP_PROP_AUTO_WB, 1)
 
-        # フォーカス設定（このカメラはオートフォーカス非対応のため手動フォーカスを使用）
-        if settings and "focus" in settings and settings["focus"] is not None:
-            focus_value = settings["focus"]
+        # EMEET専用設定（camera_modelが指定されている場合のみ）
+        if settings and settings.get("camera_model") == "EMEET":
+            logger.info("Applying EMEET-specific settings")
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
+            cap.set(cv2.CAP_PROP_AUTO_WB, 1)
+            
+            focus_value = settings.get("focus", 255)
+            cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+            cap.set(cv2.CAP_PROP_FOCUS, focus_value)
+            
+            cap.set(cv2.CAP_PROP_BRIGHTNESS, -10)
+            cap.set(cv2.CAP_PROP_CONTRAST, 35)
+            cap.set(cv2.CAP_PROP_SATURATION, 110)
+            cap.set(cv2.CAP_PROP_ZOOM, 50)
         else:
-            focus_value = 255  # デフォルトは無限遠フォーカス
+            logger.info("Using default camera settings")
+            # C270のデフォルト値にリセット
+            cap.set(cv2.CAP_PROP_BRIGHTNESS, 128)
+            cap.set(cv2.CAP_PROP_CONTRAST, 32)
+            cap.set(cv2.CAP_PROP_SATURATION, 32)
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)
 
-        cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # オートフォーカス無効
-        cap.set(cv2.CAP_PROP_FOCUS, focus_value)
-        logger.info(f"Focus set to: {focus_value}")
-        cap.set(cv2.CAP_PROP_BRIGHTNESS, -10)
-        cap.set(cv2.CAP_PROP_CONTRAST, 35)
-        cap.set(cv2.CAP_PROP_SATURATION, 110)
-
-        zoom_level = 50
-        cap.set(cv2.CAP_PROP_ZOOM, zoom_level)
-
-        logger.info(f"zoom: {cap.get(cv2.CAP_PROP_ZOOM)}")
-
-        logger.info(f"fourcc: {self.decode_fourcc(cap.get(cv2.CAP_PROP_FOURCC))}, width: {cap.get(cv2.CAP_PROP_FRAME_WIDTH)}, "
-                    f"height: {cap.get(cv2.CAP_PROP_FRAME_HEIGHT)}, fps: {cap.get(cv2.CAP_PROP_FPS)}, focus: {cap.get(cv2.CAP_PROP_FOCUS)}")
+        logger.info(f"Settings: {self.decode_fourcc(cap.get(cv2.CAP_PROP_FOURCC))}, "
+                    f"{int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))}x{int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))}, "
+                    f"{int(cap.get(cv2.CAP_PROP_FPS))}fps")
 
         is_opened = cap.isOpened()
         if not is_opened:
@@ -124,6 +125,7 @@ class CameraModule(object):
         if not result:
             logger.error("Failed to read video capture.")
             return False
+        
         if with_datetime:
             current_datetime = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             cv2.putText(img, current_datetime, (0, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3, cv2.LINE_AA)
@@ -136,7 +138,7 @@ class CameraModule(object):
         result = cv2.imwrite(save_path, img)
         cap.release()
         cv2.destroyAllWindows()
-        logger.info(f"Succeeded in saving a photo with camera. save_path: {save_path}")
+        logger.info(f"Photo saved: {save_path}")
 
         return result
 
@@ -144,7 +146,7 @@ class CameraModule(object):
 def debug() -> None:
     """debug function.
     """
-    import argparse, os, yaml
+    import argparse, yaml
 
     parser = argparse.ArgumentParser(description="Camera module script")
     parser.add_argument("--config", default="config.yaml", help="config file path")
