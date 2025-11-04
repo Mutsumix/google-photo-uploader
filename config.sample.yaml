@@ -7,7 +7,7 @@ camera:
   settings:
     camera_model: null  # "EMEET"を指定するとEMEET専用設定を適用、nullまたは未指定でデフォルト
     width: 1920
-    height: 1080
+    height: 960
     fourcc: "MJPG"
     fps: 30
     focus: null
