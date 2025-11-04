@@ -94,11 +94,11 @@ class CameraModule(object):
             logger.info("Applying EMEET-specific settings")
             cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
             cap.set(cv2.CAP_PROP_AUTO_WB, 1)
-            
+
             focus_value = settings.get("focus", 255)
             cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
             cap.set(cv2.CAP_PROP_FOCUS, focus_value)
-            
+
             cap.set(cv2.CAP_PROP_BRIGHTNESS, -10)
             cap.set(cv2.CAP_PROP_CONTRAST, 35)
             cap.set(cv2.CAP_PROP_SATURATION, 110)

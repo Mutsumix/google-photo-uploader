@@ -5,12 +5,12 @@ camera:
   use: true
   photo_dir: "photos"
   settings:
-    camera_model: null  # "EMEET"を指定するとEMEET専用設定を適用、nullまたは未指定でデフォルト
-    width: 1920
-    height: 960
-    fourcc: "MJPG"
+    camera_model: null  # "EMEET"でEMEET専用設定、nullでデフォルト（C270等）
+    width: 1920  # C270最大:1280x960、EMEET最大:1920x1080
+    height: 1080
+    fourcc: "MJPG"  # MJPG:圧縮形式（推奨）、YUYV:非圧縮
     fps: 30
-    focus: null
+    focus: 500  # EMEETのみ有効。範囲0-1023: 0=最近距離、400-600=室内3-5m、1023=無限遠
   scheduler:
     day_of_week: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
     at_time: ["06:00:00", "12:00:00", "18:00:00"]
